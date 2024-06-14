@@ -1,6 +1,6 @@
 # ddg-exercises
 
-This repo contains C++ skeleton code for course assignments from [Discrete Differential Geometry](https://brickisland.net/DDGSpring2020/) (15-458/858). 
+This repo contains C++ code for course assignments from [Discrete Differential Geometry](https://brickisland.net/DDGSpring2020/) (15-458/858). 
 
 For the JavaScript version, see https://github.com/cmu-geometry/ddg-exercises-js.
 
