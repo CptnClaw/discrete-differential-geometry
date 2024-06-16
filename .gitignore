@@ -34,3 +34,5 @@
 
 # Mac
 **/*.DS_Store
+
+*.json
