@@ -225,18 +225,18 @@ MeshSubset SimplicialComplexOperators::closure(const MeshSubset& subset) const {
  */
 MeshSubset SimplicialComplexOperators::link(const MeshSubset& subset) const {
 
-    MeshSubset str = star(subset);
-    MeshSubset cl = closure(str);
-    MeshSubset lk = cl;
-    for (size_t v : str.vertices)
+    MeshSubset clstr = closure(star(subset));
+    MeshSubset strcls = star(closure(subset));
+    MeshSubset lk = clstr;
+    for (size_t v : strcls.vertices)
     {
         lk.vertices.erase(v);
     }
-    for (size_t e : str.edges)
+    for (size_t e : strcls.edges)
     {
         lk.edges.erase(e);
     }
-    for (size_t f : str.faces)
+    for (size_t f : strcls.faces)
     {
         lk.faces.erase(f);
     }
@@ -325,23 +325,45 @@ int SimplicialComplexOperators::isPureComplex(const MeshSubset& subset) const {
 MeshSubset SimplicialComplexOperators::boundary(const MeshSubset& subset) const {
 
     MeshSubset bdry;
-    if (isPureComplex(subset) == -1)
+    int pure_degree = isPureComplex(subset);
+    if (pure_degree <= 0)
     {
         return bdry;
     }
-    for (size_t edge : subset.edges)
+    if (pure_degree == 1)
     {
-        int count = 0;
-        for (SparseMatrix<size_t>::InnerIterator it(A1, edge); it; ++it)
+        for (size_t vertex : subset.vertices)
         {
-            if (subset.faces.find(it.index()) != subset.faces.end())
+            int count = 0;
+            for (SparseMatrix<size_t>::InnerIterator it(A0, vertex); it; ++it)
             {
-                count += 1;
+                if (subset.edges.find(it.index()) != subset.edges.end())
+                {
+                    count += 1;
+                }
+            }
+            if (count == 1)
+            {
+                bdry.vertices.insert(vertex);
             }
         }
-        if (count == 1)
+    }
+    if (pure_degree == 2)
+    {
+        for (size_t edge : subset.edges)
         {
-            bdry.edges.insert(edge);
+            int count = 0;
+            for (SparseMatrix<size_t>::InnerIterator it(A1, edge); it; ++it)
+            {
+                if (subset.faces.find(it.index()) != subset.faces.end())
+                {
+                    count += 1;
+                }
+            }
+            if (count == 1)
+            {
+                bdry.edges.insert(edge);
+            }
         }
     }
     return closure(bdry);
